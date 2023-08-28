@@ -29,6 +29,25 @@ const login = async (email, password) => {
   };
 };
 
+const create = async (user) => {
+  const hasEmail = await User.findOne({ where: { email: user.email } });
+  if (hasEmail) return { status: 'CONFLICT', data: { message: 'User already registered' } };
+  await User.create(user);
+
+  const jwtPayload = {
+    sub: user.id,
+    name: user.displayName,
+    role: 'user',
+  };
+
+  const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, {
+    algorithm: 'HS256',
+    expiresIn: '30m',
+  });
+  return { status: 'CREATED', data: { token } };
+};
+
 module.exports = {
   login,
+  create,
 };

@@ -1,4 +1,5 @@
 const { usersService } = require('../services');
+const mapStatusHTTP = require('../utils/mapStatusHTTP');
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -10,6 +11,16 @@ const login = async (req, res) => {
   return res.status(200).json(data);
 };
 
+const create = async (req, res) => {
+  try {
+    const { status, data } = await usersService.create(req.body);
+    return res.status(mapStatusHTTP(status)).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   login,
+  create,
 };
