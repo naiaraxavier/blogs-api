@@ -9,4 +9,6 @@ route.post('/', validateUserFields, usersController.create);
 
 route.get('/', authMiddleware, usersController.getAll);
 
+route.get('/:id', authMiddleware, usersController.getById);
+
 module.exports = route;

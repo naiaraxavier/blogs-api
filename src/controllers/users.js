@@ -29,8 +29,19 @@ try {
 }
 };
 
+const getById = async (req, res) => {
+  try {
+    const { status, data } = await usersService.getById(Number(req.params.id));
+    console.log(data);
+    res.status(mapStatusHTTP(status)).json(data);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 module.exports = {
   login,
   create,
   getAll,
+  getById,
 };
