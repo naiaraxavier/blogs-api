@@ -12,6 +12,16 @@ const create = async (req, res) => {
   }
 };
 
+const getAll = async (req, res) => {
+  try {
+    const { status, data } = await postService.getAll();
+    res.status(mapStatusHTTP(status)).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+  };
+
 module.exports = {
   create,
+  getAll,
 };

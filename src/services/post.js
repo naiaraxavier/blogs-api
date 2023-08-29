@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { BlogPost, Category, PostCategory } = require('../models');
+const { BlogPost, Category, PostCategory, User } = require('../models');
 
 const getUserIdFromToken = (authToken) => {
   try {
@@ -38,6 +38,21 @@ const create = async (post, token) => {
   return { status: 'CREATED', data: createdPost };
 };
 
+const getAll = async () => {
+  const posts = await BlogPost.findAll({
+    include: [
+      { model: User, as: 'user', attributes: { exclude: ['password'] } },
+      { model: Category, as: 'categories', through: { attributes: [] } },
+    ],
+  });
+  if (!posts || posts.length === 0) {
+    return { status: 'NOT_FOUND', data: { message: 'Posts not found' } };
+  }
+
+  return { status: 'SUCCESSFUL', data: posts };
+};
+
 module.exports = {
   create,
+  getAll,
 };
