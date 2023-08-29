@@ -16,7 +16,7 @@ const generateToken = (user) => {
 
   const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, {
     algorithm: 'HS256',
-    expiresIn: '30m',
+    expiresIn: '50m',
   });
 
   return token;

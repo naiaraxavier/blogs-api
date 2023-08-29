@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     timestamps: false,
-    tableName: 'post_categories',
+    tableName: 'posts_categories',
     underscored: true
   });
 
