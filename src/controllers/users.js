@@ -2,13 +2,13 @@ const { usersService } = require('../services');
 const mapStatusHTTP = require('../utils/mapStatusHTTP');
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
-
-  const { data, status } = await usersService.login(email, password);
-
-  if (status === 'UNAUTHENTICATED') return res.status(400).json(data);
-  
-  return res.status(200).json(data);
+  try {
+    const { email, password } = req.body;
+    const { data, status } = await usersService.login(email, password);
+    return res.status(mapStatusHTTP(status)).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 const create = async (req, res) => {
@@ -20,7 +20,17 @@ const create = async (req, res) => {
   }
 };
 
+const getAll = async (req, res) => {
+try {
+  const { status, data } = await usersService.getAll();
+  res.status(mapStatusHTTP(status)).json(data);
+} catch (err) {
+  res.status(500).json({ error: err.message });
+}
+};
+
 module.exports = {
   login,
   create,
+  getAll,
 };
