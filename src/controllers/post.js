@@ -19,9 +19,20 @@ const getAll = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-  };
+};
+
+const getById = async (req, res) => {
+  try {
+    const { status, data } = await postService.getById(Number(req.params.id));
+    console.log(data);
+    res.status(mapStatusHTTP(status)).json(data);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 module.exports = {
   create,
   getAll,
+  getById,
 };
