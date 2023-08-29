@@ -7,4 +7,6 @@ const route = express.Router();
 
 route.post('/', authMiddleware, validateCategoryFields, categoriesController.create);
 
+route.get('/', authMiddleware, categoriesController.getAll);
+
 module.exports = route;
