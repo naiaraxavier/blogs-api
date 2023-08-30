@@ -5,7 +5,7 @@ const unauthenticatedReturn = {
   status: 'UNAUTHENTICATED', 
   data: { message: 'one or more "categoryIds" not found' }, 
 };
-const notFounReturn = { status: 'NOT_FOUND', data: { message: 'Posts not found' } };
+const notFoundReturn = { status: 'NOT_FOUND', data: { message: 'Post does not exist' } };
 
 const create = async (post, token) => {
   const { title, content, categoryIds } = post;
@@ -34,7 +34,7 @@ const getAll = async () => {
       { model: Category, as: 'categories', through: { attributes: [] } },
     ],
   });
-  if (!posts || posts.length === 0) return notFounReturn;
+  if (!posts || posts.length === 0) return notFoundReturn;
 
   return { status: 'SUCCESSFUL', data: posts };
 };
@@ -47,7 +47,7 @@ const getById = async (id) => {
       { model: Category, as: 'categories', through: { attributes: [] } },
     ],
   });
-  if (!post || post.length === 0) return notFounReturn;
+  if (!post || post.length === 0) return notFoundReturn;
 
   return { status: 'SUCCESSFUL', data: post };
 }; 
