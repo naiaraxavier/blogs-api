@@ -10,54 +10,35 @@ const notFoundReturn = { status: 'NOT_FOUND', data: { message: 'Post does not ex
 const create = async (post, token) => {
   const { title, content, categoryIds } = post;
   const userId = getUserIdFromToken(token);
-
-  const hasCategory = categoryIds.map((categoryId) => Category.findByPk(categoryId));
-  const categories = await Promise.all(hasCategory);
-  if (categories.some((isnull) => isnull === null)) return unauthenticatedReturn;
-
+  const hasCategory = await Promise.all(categoryIds
+    .map((categoryId) => Category.findByPk(categoryId)));
+  if (hasCategory.some((category) => category === null)) return unauthenticatedReturn;
   const createdPost = await BlogPost.create({
-    title, content, userId, published: new Date(), updated: new Date(),
-  });
-
-  categoryIds.forEach(async (id) => {
-    await PostCategory.create({
-      postId: createdPost.id, categoryId: id,
-    });
-  });
+    title, content, userId, published: new Date(), updated: new Date() });
+  await Promise.all(categoryIds.map((id) => PostCategory.create({
+    postId: createdPost.id, categoryId: id })));
   return { status: 'CREATED', data: createdPost };
 };
 
-const getAll = async () => {
-  const posts = await BlogPost.findAll({
-    include: [
-      { model: User, as: 'user', attributes: { exclude: ['password'] } },
-      { model: Category, as: 'categories', through: { attributes: [] } },
-    ],
-  });
-  if (!posts || posts.length === 0) return notFoundReturn;
+const getPostsInclude = [
+  { model: User, as: 'user', attributes: { exclude: ['password'] } },
+  { model: Category, as: 'categories', through: { attributes: [] } },
+];
 
-  return { status: 'SUCCESSFUL', data: posts };
+const getAll = async () => {
+  const posts = await BlogPost.findAll({ include: getPostsInclude });
+  return posts || posts.length > 0 ? { status: 'SUCCESSFUL', data: posts } : notFoundReturn;
 };
 
 const getById = async (id) => {
-  const post = await BlogPost.findOne({ 
-    where: { id },
-    include: [
-      { model: User, as: 'user', attributes: { exclude: ['password'] } },
-      { model: Category, as: 'categories', through: { attributes: [] } },
-    ],
-  });
-  if (!post || post.length === 0) return notFoundReturn;
-
-  return { status: 'SUCCESSFUL', data: post };
+  const post = await BlogPost.findOne({ where: { id }, include: getPostsInclude });
+  return post || post.length > 0 ? { status: 'SUCCESSFUL', data: post } : notFoundReturn;
 };
 
 const remove = async (id) => {
   const blogid = await BlogPost.findByPk(id, { include: [{ model: User, as: 'user' }] });
-  const removed = await BlogPost.destroy(
-    { where: { id } },
-  );
-return { removed, blogid };
+  const removed = await BlogPost.destroy({ where: { id } });
+  return { removed, blogid };
 };
 
 module.exports = {
