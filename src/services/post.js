@@ -27,12 +27,13 @@ const getPostsInclude = [
 
 const getAll = async () => {
   const posts = await BlogPost.findAll({ include: getPostsInclude });
-  return posts || posts.length > 0 ? { status: 'SUCCESSFUL', data: posts } : notFoundReturn;
+  return posts && posts.length > 0 ? { status: 'SUCCESSFUL', data: posts } : notFoundReturn;
 };
 
 const getById = async (id) => {
   const post = await BlogPost.findOne({ where: { id }, include: getPostsInclude });
-  return post || post.length > 0 ? { status: 'SUCCESSFUL', data: post } : notFoundReturn;
+  if (!post || post.length === 0) return notFoundReturn;
+  return { status: 'SUCCESSFUL', data: post };
 };
 
 const remove = async (id) => {

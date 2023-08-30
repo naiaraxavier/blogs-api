@@ -45,13 +45,13 @@ const getById = async (id) => {
   if (!user || user.length === 0) {
     return { status: 'NOT_FOUND', data: { message: 'User does not exist' } };
   }
-
   return { status: 'SUCCESSFUL', data: user };
 }; 
 
-module.exports = {
-  login,
-  create,
-  getAll,
-  getById,
+const remove = async (id) => {
+  const removed = await User.destroy({ where: { id } });
+  return removed;
 };
+
+module.exports = {
+  login, create, getAll, getById, remove };

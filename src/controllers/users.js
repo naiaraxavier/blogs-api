@@ -1,5 +1,6 @@
 const { usersService } = require('../services');
 const mapStatusHTTP = require('../utils/mapStatusHTTP');
+const { getUserIdFromToken } = require('../utils/token');
 
 const login = async (req, res) => {
   try {
@@ -39,9 +40,17 @@ const getById = async (req, res) => {
   }
 };
 
+const remove = async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const userId = getUserIdFromToken(token);
+  await usersService.remove(userId);
+  res.status(204).end();
+};
+
 module.exports = {
   login,
   create,
   getAll,
   getById,
+  remove,
 };
