@@ -1,5 +1,6 @@
 const { postService } = require('../services');
 const mapStatusHTTP = require('../utils/mapStatusHTTP');
+const { getUserIdFromToken } = require('../utils/token');
 
 const create = async (req, res) => {
   try {
@@ -31,8 +32,23 @@ const getById = async (req, res) => {
   }
 };
 
+const remove = async (req, res) => {
+  const { id } = req.params;
+  const { removed, blogid } = await postService.remove(id);
+  console.log(blogid);
+  if (!removed) return res.status(404).json({ message: 'Post does not exist' });
+
+  const token = req.headers.authorization.split(' ')[1];
+  const userId = getUserIdFromToken(token);
+  if (!userId || userId !== blogid.dataValues.userId) {
+    return res.status(401).json({ message: 'Unauthorized user' });
+  }
+  res.status(204).end();
+};
+
 module.exports = {
   create,
   getAll,
   getById,
+  remove,
 };

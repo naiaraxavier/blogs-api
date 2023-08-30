@@ -50,10 +50,16 @@ const getById = async (id) => {
   if (!post || post.length === 0) return notFoundReturn;
 
   return { status: 'SUCCESSFUL', data: post };
-}; 
+};
+
+const remove = async (id) => {
+  const blogid = await BlogPost.findByPk(id, { include: [{ model: User, as: 'user' }] });
+  const removed = await BlogPost.destroy(
+    { where: { id } },
+  );
+return { removed, blogid };
+};
 
 module.exports = {
-  create,
-  getAll,
-  getById,
+  create, getAll, getById, remove,
 };
