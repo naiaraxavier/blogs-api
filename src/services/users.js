@@ -1,25 +1,10 @@
-const jwt = require('jsonwebtoken');
 const { User } = require('../models');
+const { generateToken } = require('../utils/token');
 
 const unauthenticatedMessage = 'Invalid fields';
 const unauthenticatedReturn = { 
   status: 'UNAUTHENTICATED', 
   data: { message: unauthenticatedMessage }, 
-};
-
-const generateToken = (user) => {
-  const jwtPayload = {
-    sub: user.id,
-    name: user.displayName,
-    role: 'user',
-  };
-
-  const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, {
-    algorithm: 'HS256',
-    expiresIn: '50m',
-  });
-
-  return token;
 };
 
 const login = async (email, password) => {
@@ -58,8 +43,7 @@ const getAll = async () => {
 const getById = async (id) => {
   const user = await User.findOne({ where: { id }, attributes: { exclude: ['password'] } });
   if (!user || user.length === 0) {
-    return { status: 'NOT_FOUND',
-    data: { message: 'User does not exist' } };
+    return { status: 'NOT_FOUND', data: { message: 'User does not exist' } };
   }
 
   return { status: 'SUCCESSFUL', data: user };

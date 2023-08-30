@@ -1,19 +1,9 @@
-const jwt = require('jsonwebtoken');
 const { BlogPost, Category, PostCategory, User } = require('../models');
+const { getUserIdFromToken } = require('../utils/token');
 
-const getUserIdFromToken = (authToken) => {
-  try {
-    const decoded = jwt.verify(authToken, process.env.JWT_SECRET);
-    return decoded.sub;
-  } catch (err) {
-    return err.message;
-  }
-};
-
-const unauthenticatedMessage = 'one or more "categoryIds" not found';
 const unauthenticatedReturn = { 
   status: 'UNAUTHENTICATED', 
-  data: { message: unauthenticatedMessage }, 
+  data: { message: 'one or more "categoryIds" not found' }, 
 };
 
 const create = async (post, token) => {
