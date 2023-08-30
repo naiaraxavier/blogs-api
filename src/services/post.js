@@ -5,6 +5,7 @@ const unauthenticatedReturn = {
   status: 'UNAUTHENTICATED', 
   data: { message: 'one or more "categoryIds" not found' }, 
 };
+const notFounReturn = { status: 'NOT_FOUND', data: { message: 'Posts not found' } };
 
 const create = async (post, token) => {
   const { title, content, categoryIds } = post;
@@ -12,9 +13,7 @@ const create = async (post, token) => {
 
   const hasCategory = categoryIds.map((categoryId) => Category.findByPk(categoryId));
   const categories = await Promise.all(hasCategory);
-  if (categories.some((isnull) => isnull === null)) {
-    return unauthenticatedReturn;
-  }
+  if (categories.some((isnull) => isnull === null)) return unauthenticatedReturn;
 
   const createdPost = await BlogPost.create({
     title, content, userId, published: new Date(), updated: new Date(),
@@ -35,9 +34,7 @@ const getAll = async () => {
       { model: Category, as: 'categories', through: { attributes: [] } },
     ],
   });
-  if (!posts || posts.length === 0) {
-    return { status: 'NOT_FOUND', data: { message: 'Posts not found' } };
-  }
+  if (!posts || posts.length === 0) return notFounReturn;
 
   return { status: 'SUCCESSFUL', data: posts };
 };
@@ -50,9 +47,7 @@ const getById = async (id) => {
       { model: Category, as: 'categories', through: { attributes: [] } },
     ],
   });
-  if (!post || post.length === 0) {
-    return { status: 'NOT_FOUND', data: { message: 'Post does not exist' } };
-  }
+  if (!post || post.length === 0) return notFounReturn;
 
   return { status: 'SUCCESSFUL', data: post };
 }; 
