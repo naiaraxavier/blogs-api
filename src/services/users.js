@@ -53,5 +53,4 @@ const remove = async (id) => {
   return removed;
 };
 
-module.exports = {
-  login, create, getAll, getById, remove };
+module.exports = { login, create, getAll, getById, remove };
